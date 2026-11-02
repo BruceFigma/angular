@@ -1,0 +1,43 @@
+<main class="workspace">
+  <header class="page-header">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">▥</span> Little Kanban</div>
+    <span class="prototype-badge"><span aria-hidden="true"></span> Angular proof of concept</span>
+  </header>
+
+  <section class="board-intro" aria-labelledby="board-title">
+    <p class="eyebrow">A LITTLE SPACE TO MAKE THINGS HAPPEN</p>
+    <h1 id="board-title">Your tasks, in motion.</h1>
+    <p>Capture an idea. Make some progress. Enjoy the done.</p>
+  </section>
+
+  <form class="add-task" (submit)="addTask($event)">
+    <label for="task-title">What’s next?</label>
+    <div class="input-row">
+      <input id="task-title" name="title" type="text" placeholder="Give your next task a title…"
+        autocomplete="off" [value]="draft()" (input)="draft.set($any($event.target).value)">
+      <button type="submit" [disabled]="!draft().trim()"><span aria-hidden="true">+</span> Add task</button>
+    </div>
+    <p>New tasks start in To Do.</p>
+  </form>
+
+  <div class="board-heading"><h2>My board</h2><span>{{ tasks().length }} tasks</span></div>
+  <div class="board">
+    @for (column of columns; track column.id) {
+      <section class="column" [class]="'column ' + column.id" [attr.aria-labelledby]="'heading-' + column.id">
+        <header class="column-header">
+          <div><span class="status-dot" aria-hidden="true"></span><h2 [id]="'heading-' + column.id">{{ column.title }}</h2><span class="count">{{ tasksFor(column.id).length }}</span></div>
+          <p>{{ column.hint }}</p>
+        </header>
+        <div class="task-list">
+          @for (task of tasksFor(column.id); track task.id) {
+            <app-task-card [task]="task" (moved)="moveTask(task.id, $event)" />
+          } @empty {
+            <p class="empty-state">No tasks here yet.</p>
+          }
+        </div>
+      </section>
+    }
+  </div>
+  <p class="sr-only" role="status">{{ announcement() }}</p>
+  <footer>Keep it simple. Keep it moving. <span>Tasks live in this tab and reset on refresh.</span></footer>
+</main>
